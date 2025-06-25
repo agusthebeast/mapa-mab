@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Provincia de Buenos Aires</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <img src="iconos/logo-congreso.jpeg" alt="Congreso de la Libertad Bonaerense" class="logo-congreso">
+
+  <h1>Mapa Del Abandono Bonaerense (MAB)</h1>
+  <h2>
+    Un mapa interactivo con imágenes reales de escuelas, hospitales, rutas y barrios en crisis.<br>
+    Cada punto en este mapa muestra lo que no quieren que veas.
+  </h2>
+
+  <div class="buscador-wrapper">
+    <input type="text" id="buscador-distrito" placeholder="Buscar un distrito..." list="distritos" />
+    <datalist id="distritos"></datalist>
+  </div>
+
+  <div id="contador-imagenes">📸 Cargando cantidad de evidencias...</div>
+
+  <div id="mapa-container">
+    <div id="zoom-wrapper"></div>
+
+    <div id="zoom-buttons">
+      <button id="zoom-in">＋</button>
+      <button id="zoom-out">－</button>
+    </div>
+  </div>
+
+  <div id="tooltip"></div>
+
+  <script src="script.js"></script>
+
+  <div class="mensaje-cierre">
+    <p>
+      Es momento de cambiarlo todo. De construir la provincia desde sus cimientos, la provincia que verdaderamente soñamos y nos merecemos los bonaerenses. Escuelas dignas, calles transitables, salud real y seguridad verdadera.
+    </p>
+  </div>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-logos">
+        <img src="iconos/logo3.png" alt="Logo 3">
+      </div>
+      <p> </p>
+    </div>
+  </footer>
+
+</body>
+</html>
