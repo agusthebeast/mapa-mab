@@ -10,6 +10,10 @@ let dragStart = null;
 let lastClickedId = null;
 let currentSlide = 0;
 let currentImages = [];
+const tooltip = document.getElementById('tooltip');
+const buscador = document.getElementById("buscador-distrito");
+const datalist = document.getElementById("distritos");
+const distritosList = []; // <--- IMPORTANTE: para usar en formulario
 
 // 2. Cargar el mapa
 fetch("mapa/buenos-aires-mapa.svg")
@@ -49,14 +53,12 @@ fetch("mapa/buenos-aires-mapa.svg")
     setupDrag();
     llenarDatalist();
     contarImagenesTotales();
+    llenarSelectorFormulario(); // <-- importante para cargar el select
   })
   .catch(err => {
     console.error("Error al cargar el SVG:", err);
     document.getElementById("mapa-container").innerHTML = "<p>Error al cargar el mapa.</p>";
   });
-
-// 3. Tooltip
-const tooltip = document.getElementById('tooltip');
 
 // 4. Zoom a distrito
 function zoomToPath(path) {
@@ -127,10 +129,8 @@ function setupDrag() {
 
   svgEl.addEventListener("mousedown", startDrag);
   svgEl.addEventListener("touchstart", startDrag);
-
   window.addEventListener("mousemove", moveDrag);
   window.addEventListener("touchmove", moveDrag);
-
   window.addEventListener("mouseup", endDrag);
   window.addEventListener("touchend", endDrag);
 }
@@ -230,10 +230,6 @@ function closeAll() {
 }
 
 // 10. Buscador por nombre
-const buscador = document.getElementById("buscador-distrito");
-const datalist = document.getElementById("distritos");
-const distritosList = [];
-
 function llenarDatalist() {
   document.querySelectorAll("svg path.distrito").forEach(p => {
     const title = p.getAttribute("title");
@@ -279,4 +275,16 @@ async function contarImagenesTotales() {
   if (contador) {
     contador.innerText = `📸 ${total} evidencias documentadas hasta ahora.`;
   }
+}
+
+// 12. Llenar selector del formulario
+function llenarSelectorFormulario() {
+  const selector = document.getElementById("distrito-select");
+  if (!selector) return;
+  distritosList.forEach(d => {
+    const option = document.createElement("option");
+    option.value = d.title;
+    option.textContent = d.title;
+    selector.appendChild(option);
+  });
 }

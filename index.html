@@ -14,18 +14,13 @@
     El mapa interactivo de la Provincia Abandonada. <br> Navegá por el abandono mediante imágenes reales de escuelas, hospitales, rutas y calles de la provincia de Buenos Aires.
   </h2>
   <h2>
-  Cada punto en este mapa es una historia trunca.  Es lo que no quieren que veas. <br> Cada foto es un recurso desviado, es la ineficiencia del Estado en su máxima expresión.
-</h2>
+    Cada punto en este mapa es una historia trunca. Es lo que no quieren que veas. <br> Cada foto es un recurso desviado, es la ineficiencia del Estado en su máxima expresión.
+  </h2>
 
   <div class="buscador-wrapper">
-  <input type="text" id="buscador-distrito" placeholder="Buscar un distrito..." list="distritos" />
-  <button id="boton-buscar">Buscar</button>
-  <datalist id="distritos">
-    <option value="Lanús">
-    <option value="San Vicente">
-    <option value="La Plata">
-    <option value="Morón">
-  </datalist>
+    <input type="text" id="buscador-distrito" placeholder="Buscar un distrito..." list="distritos" />
+    <button id="boton-buscar">Buscar</button>
+    <datalist id="distritos"></datalist>
   </div>
 
   <div id="contador-imagenes">📸 Cargando cantidad de evidencias...</div>
@@ -40,43 +35,52 @@
   </div>
 
   <!-- Botón para abrir el formulario -->
-<button onclick="abrirFormularioCarga()">📤 Cargar imagen</button>
+  <button onclick="abrirFormularioCarga()">📤 Cargar imagen</button>
 
-<!-- Formulario oculto -->
-<div id="formulario-carga" style="display:none; padding: 1rem; border: 1px solid #ccc;">
-  <h3>Cargar imagen al mapa</h3>
-  <label>Distrito:
-    <select id="distrito-select">
-      <option value="">Seleccioná un distrito</option>
-      <option value="Lanús">Lanús</option>
-      <option value="La Matanza">La Matanza</option>
-      <!-- Agregá todos los distritos -->
-    </select>
-  </label><br>
+  <!-- Formulario oculto -->
+  <div id="formulario-carga" style="display:none; padding: 1rem; border: 1px solid #ccc;">
+    <h3>Cargar imagen al mapa</h3>
+    <label>Distrito:
+      <select id="distrito-select">
+        <option value="">Seleccioná un distrito</option>
+      </select>
+    </label><br>
 
-  <label>Categoría:
-    <select id="categoria-select">
-      <option value="">Seleccioná una categoría</option>
-      <option value="Salud">Salud</option>
-      <option value="Educación">Educación</option>
-      <option value="Seguridad">Seguridad</option>
-      <option value="Infraestructura">Infraestructura</option>
-    </select>
-  </label><br>
+    <label>Categoría:
+      <select id="categoria-select">
+        <option value="">Seleccioná una categoría</option>
+        <option value="Salud">Salud</option>
+        <option value="Educación">Educación</option>
+        <option value="Seguridad">Seguridad</option>
+        <option value="Infraestructura">Infraestructura</option>
+      </select>
+    </label><br>
 
-  <label>Imagen:
-    <input type="file" id="imagen-input" accept="image/*" />
-  </label><br><br>
+    <label>Imagen:
+      <input type="file" id="imagen-input" accept="image/*" />
+    </label><br><br>
 
-  <button onclick="subirImagen()">Enviar imagen</button>
-</div>
+    <button onclick="subirImagen()">Enviar imagen</button>
+  </div>
 
-<script>
-function abrirFormularioCarga() {
-  document.getElementById("formulario-carga").style.display = 'block';
-}
+  <div id="tooltip"></div>
 
-async function subirImagen() {
+  <script src="script.js"></script>
+
+  <script>
+  function abrirFormularioCarga() {
+    document.getElementById("formulario-carga").style.display = 'block';
+  }
+
+  function mostrarConfirmacion() {
+    document.getElementById("mensaje-confirmacion").classList.remove("oculto");
+  }
+
+  function cerrarConfirmacion() {
+    document.getElementById("mensaje-confirmacion").classList.add("oculto");
+  }
+
+  async function subirImagen() {
   const distrito = document.getElementById("distrito-select").value;
   const categoria = document.getElementById("categoria-select").value;
   const file = document.getElementById("imagen-input").files[0];
@@ -88,27 +92,49 @@ async function subirImagen() {
 
   const formData = new FormData();
   formData.append("file", file);
-  formData.append("upload_preset", "pendientes_mapa"); // nombre del preset que creaste
+  formData.append("upload_preset", "pendientes_mapa");
   formData.append("folder", `pendientes/${distrito}/${categoria}`);
 
-  const res = await fetch("https://api.cloudinary.com/v1_1/dq9qdmgjr/image/upload", {
-    method: "POST",
-    body: formData
-  });
+  try {
+    const res = await fetch("https://api.cloudinary.com/v1_1/dq9qdmgjr/image/upload", {
+      method: "POST",
+      body: formData
+    });
 
-  const data = await res.json();
-  if (data.secure_url) {
-    alert("Imagen enviada correctamente. Será revisada antes de publicarse.");
-  } else {
-    alert("Error al subir imagen.");
+    const data = await res.json();
+    if (data.secure_url) {
+      document.getElementById("formulario-carga").style.display = "none";
+      document.getElementById("gracias-overlay").style.display = "flex";
+
+      // Limpiar campos
+      document.getElementById("distrito-select").value = "";
+      document.getElementById("categoria-select").value = "";
+      document.getElementById("imagen-input").value = "";
+    } else {
+      alert("Error al subir imagen.");
+    }
+  } catch (error) {
+    alert("Error al conectar con el servidor.");
   }
 }
-</script>
+
+function cerrarGracias() {
+  document.getElementById("gracias-overlay").style.display = "none";
+}
 
 
-  <div id="tooltip"></div>
+  document.addEventListener("DOMContentLoaded", () => {
+    const selector = document.getElementById("distrito-select");
+    if (!selector || typeof distritosList === "undefined") return;
 
-  <script src="script.js"></script>
+    distritosList.forEach(d => {
+      const option = document.createElement("option");
+      option.value = d.title;
+      option.textContent = d.title;
+      selector.appendChild(option);
+    });
+  });
+  </script>
 
   <div class="mensaje-cierre">
     <p>
@@ -121,9 +147,14 @@ async function subirImagen() {
       <div class="footer-logos">
         <img src="iconos/logo3.png" alt="Logo 3">
       </div>
-      <p> </p>
     </div>
   </footer>
+<!-- Mensaje de agradecimiento (oculto por defecto) -->
+<div id="gracias-overlay" style="display:none;">
+  <img src="iconos/logo3.png" alt="Logo">
+  <h2>Gracias por tu aporte, la provincia necesita abrir los ojos</h2>
+  <button onclick="cerrarGracias()">Cerrar</button>
+</div>
 
 </body>
 </html>
