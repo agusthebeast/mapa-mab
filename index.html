@@ -28,8 +28,6 @@
   </datalist>
   </div>
 
-
-
   <div id="contador-imagenes">📸 Cargando cantidad de evidencias...</div>
 
   <div id="mapa-container">
@@ -40,6 +38,73 @@
       <button id="zoom-out">－</button>
     </div>
   </div>
+
+  <!-- Botón para abrir el formulario -->
+<button onclick="abrirFormularioCarga()">📤 Cargar imagen</button>
+
+<!-- Formulario oculto -->
+<div id="formulario-carga" style="display:none; padding: 1rem; border: 1px solid #ccc;">
+  <h3>Cargar imagen al mapa</h3>
+  <label>Distrito:
+    <select id="distrito-select">
+      <option value="">Seleccioná un distrito</option>
+      <option value="Lanús">Lanús</option>
+      <option value="La Matanza">La Matanza</option>
+      <!-- Agregá todos los distritos -->
+    </select>
+  </label><br>
+
+  <label>Categoría:
+    <select id="categoria-select">
+      <option value="">Seleccioná una categoría</option>
+      <option value="Salud">Salud</option>
+      <option value="Educación">Educación</option>
+      <option value="Seguridad">Seguridad</option>
+      <option value="Infraestructura">Infraestructura</option>
+    </select>
+  </label><br>
+
+  <label>Imagen:
+    <input type="file" id="imagen-input" accept="image/*" />
+  </label><br><br>
+
+  <button onclick="subirImagen()">Enviar imagen</button>
+</div>
+
+<script>
+function abrirFormularioCarga() {
+  document.getElementById("formulario-carga").style.display = 'block';
+}
+
+async function subirImagen() {
+  const distrito = document.getElementById("distrito-select").value;
+  const categoria = document.getElementById("categoria-select").value;
+  const file = document.getElementById("imagen-input").files[0];
+
+  if (!distrito || !categoria || !file) {
+    alert("Por favor completá todos los campos.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", "pendientes_mapa"); // nombre del preset que creaste
+  formData.append("folder", `pendientes/${distrito}/${categoria}`);
+
+  const res = await fetch("https://api.cloudinary.com/v1_1/dq9qdmgjr/image/upload", {
+    method: "POST",
+    body: formData
+  });
+
+  const data = await res.json();
+  if (data.secure_url) {
+    alert("Imagen enviada correctamente. Será revisada antes de publicarse.");
+  } else {
+    alert("Error al subir imagen.");
+  }
+}
+</script>
+
 
   <div id="tooltip"></div>
 
