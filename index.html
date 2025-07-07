@@ -86,9 +86,10 @@
   const file = document.getElementById("imagen-input").files[0];
 
   if (!distrito || !categoria || !file) {
-    alert("Por favor completá todos los campos.");
-    return;
-  }
+  mostrarMensaje("Por favor completá todos los campos.");
+  return;
+}
+
 
   const formData = new FormData();
   formData.append("file", file);
@@ -134,6 +135,18 @@ function cerrarGracias() {
       selector.appendChild(option);
     });
   });
+
+  function mostrarMensaje(texto) {
+  const mensaje = document.getElementById("mensaje-flotante");
+  const textoElem = document.getElementById("texto-mensaje");
+  textoElem.innerText = texto;
+  mensaje.classList.remove("oculto");
+}
+
+function cerrarMensaje() {
+  document.getElementById("mensaje-flotante").classList.add("oculto");
+}
+
   </script>
 
   <div class="mensaje-cierre">
@@ -155,6 +168,16 @@ function cerrarGracias() {
   <h2>Gracias por tu aporte, la provincia necesita abrir los ojos</h2>
   <button onclick="cerrarGracias()">Cerrar</button>
 </div>
+
+<!-- Mensaje flotante reutilizable -->
+<div id="mensaje-flotante" class="oculto">
+  <div class="caja-mensaje">
+    <img src="iconos/logo3.png" alt="Logo" class="logo-mensaje">
+    <p id="texto-mensaje"></p>
+    <button onclick="cerrarMensaje()">Cerrar</button>
+  </div>
+</div>
+
 
 </body>
 </html>
