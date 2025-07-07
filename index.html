@@ -105,7 +105,7 @@
     const data = await res.json();
     if (data.secure_url) {
       document.getElementById("formulario-carga").style.display = "none";
-      document.getElementById("gracias-overlay").style.display = "flex";
+      document.getElementById("mensaje-flotante").style.display = "flex";
 
       // Limpiar campos
       document.getElementById("distrito-select").value = "";
@@ -120,7 +120,7 @@
 }
 
 function cerrarGracias() {
-  document.getElementById("gracias-overlay").style.display = "none";
+  document.getElementById("mensaje-flotante").style.display = "none";
 }
 
 
@@ -163,7 +163,7 @@ function cerrarMensaje() {
     </div>
   </footer>
 <!-- Mensaje de agradecimiento (oculto por defecto) -->
-<div id="gracias-overlay" style="display:none;">
+<div id="mensaje-flotante" style="display:none;">
   <img src="iconos/logo3.png" alt="Logo">
   <h2>Gracias por tu aporte, la provincia necesita abrir los ojos</h2>
   <button onclick="cerrarGracias()">Cerrar</button>
