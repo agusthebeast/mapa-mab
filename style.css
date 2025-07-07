@@ -68,9 +68,14 @@ svg path.distrito:hover {
   transition: fill 0.2s;
 }
 
+.resaltado {
+  fill: #B78CFF !important;
+}
+
 .distrito:hover {
   fill: #9C6BDF;
 }
+
 
 #tooltip {
   display: none;
@@ -373,4 +378,8 @@ footer {
   font-size: 16px;
   text-align: center;
   max-width: 90%;
+}
+
+svg {
+  cursor: grab;
 }

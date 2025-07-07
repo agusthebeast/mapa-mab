@@ -1,8 +1,21 @@
+// 1. Variables globales
+let svgEl;
+let originalViewBox = [0, 0, 600, 600];
+let currentZoom = 1;
+const zoomStep = 0.2;
+const maxZoom = 3;
+const minZoom = 0.5;
+let currentOffset = { x: 0, y: 0 };
+let dragStart = null;
+let lastClickedId = null;
+let currentSlide = 0;
+let currentImages = [];
+
+// 2. Cargar el mapa
 fetch("mapa/buenos-aires-mapa.svg")
   .then(res => res.text())
   .then(svg => {
     document.getElementById("zoom-wrapper").innerHTML = svg;
-
     svgEl = document.querySelector("#zoom-wrapper svg");
     originalViewBox = svgEl.getAttribute("viewBox").split(" ").map(Number);
 
@@ -10,8 +23,13 @@ fetch("mapa/buenos-aires-mapa.svg")
       p.classList.add("distrito");
 
       p.addEventListener("click", () => {
-        const distrito = p.id;
-        openCategorias(distrito, p.getAttribute("title"));
+        const id = p.id;
+        if (lastClickedId === id) {
+          openCategorias(id, p.getAttribute("title"));
+        } else {
+          zoomToPath(p);
+          lastClickedId = id;
+        }
       });
 
       p.addEventListener("mousemove", e => {
@@ -28,14 +46,96 @@ fetch("mapa/buenos-aires-mapa.svg")
     });
 
     setupZoomControls();
+    setupDrag();
+    llenarDatalist();
+    contarImagenesTotales();
   })
   .catch(err => {
     console.error("Error al cargar el SVG:", err);
     document.getElementById("mapa-container").innerHTML = "<p>Error al cargar el mapa.</p>";
   });
 
+// 3. Tooltip
 const tooltip = document.getElementById('tooltip');
 
+// 4. Zoom a distrito
+function zoomToPath(path) {
+  if (!svgEl) return;
+  const bbox = path.getBBox();
+  const padding = 20;
+  const newViewBox = [
+    bbox.x - padding,
+    bbox.y - padding,
+    bbox.width + padding * 2,
+    bbox.height + padding * 2
+  ];
+  svgEl.setAttribute("viewBox", newViewBox.join(" "));
+  document.querySelectorAll("svg path.distrito").forEach(p => p.classList.remove("resaltado"));
+  path.classList.add("resaltado");
+}
+
+// 5. Zoom manual (+/-)
+function setupZoomControls() {
+  document.getElementById("zoom-in").addEventListener("click", () => {
+    currentZoom = Math.min(maxZoom, currentZoom + zoomStep);
+    updateZoom();
+  });
+
+  document.getElementById("zoom-out").addEventListener("click", () => {
+    currentZoom = Math.max(minZoom, currentZoom - zoomStep);
+    updateZoom();
+  });
+}
+
+function updateZoom() {
+  const newW = originalViewBox[2] / currentZoom;
+  const newH = originalViewBox[3] / currentZoom;
+  const newX = originalViewBox[0] + currentOffset.x;
+  const newY = originalViewBox[1] + currentOffset.y;
+  svgEl.setAttribute("viewBox", `${newX} ${newY} ${newW} ${newH}`);
+}
+
+// 6. Drag (mouse y touch)
+function setupDrag() {
+  let dragging = false;
+
+  function getEventCoords(e) {
+    return e.touches ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : { x: e.clientX, y: e.clientY };
+  }
+
+  function startDrag(e) {
+    dragging = true;
+    dragStart = getEventCoords(e);
+    svgEl.style.cursor = "grabbing";
+  }
+
+  function moveDrag(e) {
+    if (!dragging) return;
+    const current = getEventCoords(e);
+    const dx = (current.x - dragStart.x) * (originalViewBox[2] / (svgEl.clientWidth * currentZoom));
+    const dy = (current.y - dragStart.y) * (originalViewBox[3] / (svgEl.clientHeight * currentZoom));
+    currentOffset.x -= dx;
+    currentOffset.y -= dy;
+    dragStart = current;
+    updateZoom();
+  }
+
+  function endDrag() {
+    dragging = false;
+    svgEl.style.cursor = "default";
+  }
+
+  svgEl.addEventListener("mousedown", startDrag);
+  svgEl.addEventListener("touchstart", startDrag);
+
+  window.addEventListener("mousemove", moveDrag);
+  window.addEventListener("touchmove", moveDrag);
+
+  window.addEventListener("mouseup", endDrag);
+  window.addEventListener("touchend", endDrag);
+}
+
+// 7. Categorías
 function openCategorias(distritoId, distritoNombre) {
   closeAll();
   const overlay = document.createElement("div");
@@ -66,24 +166,18 @@ function openCategorias(distritoId, distritoNombre) {
   document.body.appendChild(overlay);
 }
 
-let currentSlide = 0;
-let currentImages = [];
-
+// 8. Galería (carrusel)
 function openGaleria(distritoId, categoria) {
   closeAll();
-
-  const path = `imagenes/${distritoId}/${categoria}/index.json`;
-
-  fetch(path)
-    .then(res => {
-      if (!res.ok) {
-        throw new Error(`No se encontró ${path}`);
-      }
-      return res.json();
-    })
+  fetch(`imagenes/${distritoId}/${categoria}/index.json`)
+    .then(res => res.json())
     .then(lista => {
-      if (!Array.isArray(lista) || lista.length === 0) {
-        throw new Error("El archivo JSON está vacío o mal formateado");
+      if (!lista || lista.length === 0) {
+        const galeria = document.createElement("div");
+        galeria.id = "galeria";
+        galeria.innerHTML = "<div style='color:white; font-size:20px;'>No hay imágenes disponibles.</div>";
+        document.body.appendChild(galeria);
+        return;
       }
 
       currentImages = lista;
@@ -92,50 +186,27 @@ function openGaleria(distritoId, categoria) {
       const galeria = document.createElement("div");
       galeria.id = "galeria";
 
-      const back = document.createElement("div");
-      back.className = "back";
-      back.innerText = "←";
-      back.addEventListener("click", () => openCategorias(distritoId));
-      galeria.appendChild(back);
+      galeria.innerHTML = `
+        <div class="back">←</div>
+        <div class="close">×</div>
+        <img id="carousel-img">
+        <div id="pie-imagen"></div>
+        <div class="prev">‹</div>
+        <div class="next">›</div>
+      `;
 
-      const close = document.createElement("div");
-      close.className = "close";
-      close.innerText = "×";
-      close.addEventListener("click", closeAll);
-      galeria.appendChild(close);
-
-      const img = document.createElement("img");
-      img.id = "carousel-img";
-      galeria.appendChild(img);
-
-      const caption = document.createElement("div");
-      caption.id = "pie-imagen";
-      galeria.appendChild(caption);
-
-      const prev = document.createElement("div");
-      prev.className = "prev";
-      prev.innerText = "‹";
-      prev.addEventListener("click", () => changeSlide(-1, distritoId, categoria));
-      galeria.appendChild(prev);
-
-      const next = document.createElement("div");
-      next.className = "next";
-      next.innerText = "›";
-      next.addEventListener("click", () => changeSlide(1, distritoId, categoria));
-      galeria.appendChild(next);
+      galeria.querySelector(".back").addEventListener("click", () => openCategorias(distritoId));
+      galeria.querySelector(".close").addEventListener("click", closeAll);
+      galeria.querySelector(".prev").addEventListener("click", () => changeSlide(-1, distritoId, categoria));
+      galeria.querySelector(".next").addEventListener("click", () => changeSlide(1, distritoId, categoria));
 
       document.body.appendChild(galeria);
       updateCarousel(distritoId, categoria);
     })
     .catch(err => {
-      const galeria = document.createElement("div");
-      galeria.id = "galeria";
-      galeria.innerHTML = `<div style="color:white; font-size:20px; text-align:center;">⚠ Error: ${err.message}</div>`;
-      document.body.appendChild(galeria);
       console.error("No se pudo cargar el index.json:", err);
     });
 }
-
 
 function updateCarousel(distritoId, categoria) {
   const filename = currentImages[currentSlide];
@@ -151,103 +222,61 @@ function changeSlide(step, distritoId, categoria) {
   updateCarousel(distritoId, categoria);
 }
 
+// 9. Cerrar
 function closeAll() {
   document.querySelectorAll(".overlay, #galeria").forEach(el => el.remove());
   tooltip.style.display = 'none';
+  lastClickedId = null;
 }
 
-const buscador = document.getElementById('buscador-distrito');
-const datalist = document.getElementById('distritos');
-const distritosList = [...datalist.options].map(o => o.value);
+// 10. Buscador por nombre
+const buscador = document.getElementById("buscador-distrito");
+const datalist = document.getElementById("distritos");
+const distritosList = [];
 
-buscador.addEventListener('input', () => {
-  const valor = buscador.value.toLowerCase().trim();
-  if (!valor) return;
-  const path = document.querySelector(`svg path[id="${valor}"]`);
-  if (path) {
-    path.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    path.dispatchEvent(new Event('click'));
+function llenarDatalist() {
+  document.querySelectorAll("svg path.distrito").forEach(p => {
+    const title = p.getAttribute("title");
+    if (title) {
+      const option = document.createElement("option");
+      option.value = title;
+      datalist.appendChild(option);
+      distritosList.push({ id: p.id, title: title });
+    }
+  });
+}
+
+document.getElementById("boton-buscar").addEventListener("click", () => {
+  const valor = buscador.value.trim().toLowerCase();
+  const distrito = distritosList.find(d => d.title.toLowerCase() === valor);
+  if (distrito) {
+    const path = document.getElementById(distrito.id);
+    if (path) {
+      zoomToPath(path);
+      lastClickedId = distrito.id;
+    }
   }
 });
 
+// 11. Contador de imágenes
 async function contarImagenesTotales() {
   const categorias = ["salud", "infraestructura", "educacion", "seguridad"];
   let total = 0;
 
-  for (const distrito of distritosList) {
+  for (const distrito of distritosList.map(d => d.id)) {
     for (const categoria of categorias) {
-      const url = `imagenes/${distrito}/${categoria}/index.json`;
       try {
-        const res = await fetch(url);
-        if (!res.ok) {
-          console.warn(`⚠ No encontrado: ${url}`);
-          continue;
+        const res = await fetch(`imagenes/${distrito}/${categoria}/index.json`);
+        if (res.ok) {
+          const archivos = await res.json();
+          total += archivos.length;
         }
-        const archivos = await res.json();
-        console.log(`✅ Cargado: ${url} - ${archivos.length} archivos`);
-        total += archivos.length;
-      } catch (e) {
-        console.error(`❌ Error al leer: ${url}`, e);
-      }
+      } catch {}
     }
   }
 
   const contador = document.getElementById("contador-imagenes");
   if (contador) {
     contador.innerText = `📸 ${total} evidencias documentadas hasta ahora.`;
-  } else {
-    console.warn("⚠ No se encontró el elemento #contador-imagenes");
   }
-}
-
-let svgEl;
-let originalViewBox;
-let currentZoom = 1;
-const zoomStep = 0.2;
-const maxZoom = 3;
-const minZoom = 0.5;
-let currentOffset = { x: 0, y: 0 };
-let dragStart = null;
-
-function setupZoomControls() {
-  document.getElementById("zoom-in").addEventListener("click", () => {
-    setZoom(currentZoom + zoomStep);
-  });
-
-  document.getElementById("zoom-out").addEventListener("click", () => {
-    setZoom(currentZoom - zoomStep);
-  });
-
-  svgEl.addEventListener("wheel", e => e.preventDefault(), { passive: false });
-
-  svgEl.addEventListener("mousedown", e => {
-    dragStart = { x: e.clientX, y: e.clientY };
-    svgEl.style.cursor = "grabbing";
-  });
-
-  window.addEventListener("mouseup", () => {
-    dragStart = null;
-    svgEl.style.cursor = "default";
-  });
-
-  window.addEventListener("mousemove", e => {
-    if (!dragStart) return;
-    const dx = (e.clientX - dragStart.x) * (originalViewBox[2] / svgEl.clientWidth);
-    const dy = (e.clientY - dragStart.y) * (originalViewBox[3] / svgEl.clientHeight);
-    currentOffset.x -= dx;
-    currentOffset.y -= dy;
-    dragStart = { x: e.clientX, y: e.clientY };
-    updateViewBox();
-  });
-}
-
-function setZoom(newZoom) {
-  currentZoom = Math.min(Math.max(minZoom, newZoom), maxZoom);
-  updateViewBox();
-}
-
-function updateViewBox() {
-  const newW = originalViewBox[2] / currentZoom;
-  const newH = originalViewBox[3] / currentZoom;
-  svgEl.setAttribute("viewBox", `${originalViewBox[0] + currentOffset.x} ${originalViewBox[1] + currentOffset.y} ${newW} ${newH}`);
 }
