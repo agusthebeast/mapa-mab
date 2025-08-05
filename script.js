@@ -23,6 +23,39 @@ fetch("mapa/buenos-aires-mapa.svg")
     svgEl = document.querySelector("#zoom-wrapper svg");
     originalViewBox = svgEl.getAttribute("viewBox").split(" ").map(Number);
 
+      const distritos = [
+    "Adolfo Alsina", "Adolfo González Chaves", "Alberti", "Almirante Brown", "Arrecifes",
+    "Avellaneda", "Ayacucho", "Azul", "Bahía Blanca", "Balcarce", "Baradero", "Benito Juárez",
+    "Berazategui", "Berisso", "Bolívar", "Bragado", "Brandsen", "Campana", "Cañuelas",
+    "Capitán Sarmiento", "Carlos Casares", "Carlos Tejedor", "Carmen de Areco", "Castelli",
+    "Chacabuco", "Chascomús", "Chivilcoy", "Colón", "Coronel Dorrego", "Coronel Pringles",
+    "Coronel Rosales", "Coronel Suárez", "Daireaux", "Dolores", "Ensenada", "Escobar",
+    "Esteban Echeverría", "Exaltación de la Cruz", "Ezeiza", "Florencio Varela", "Florentino Ameghino",
+    "General Alvarado", "General Alvear", "General Arenales", "General Belgrano", "General Guido",
+    "General Juan Madariaga", "General La Madrid", "General Las Heras", "General Lavalle",
+    "General Paz", "General Pinto", "General Pueyrredón", "General Rodríguez", "General San Martín",
+    "General Viamonte", "General Villegas", "Guaminí", "Hipólito Yrigoyen", "Hurlingham", "Ituzaingó",
+    "José C. Paz", "Junín", "La Costa", "La Matanza", "La Plata", "Lanús", "Laprida", "Las Flores",
+    "Leandro N. Alem", "Lincoln", "Lobería", "Lobos", "Lomas de Zamora", "Luján", "Magdalena", "Maipú",
+    "Malvinas Argentinas", "Mar Chiquita", "Marcos Paz", "Mercedes", "Merlo", "Monte", "Monte Hermoso",
+    "Moreno", "Morón", "Navarro", "Necochea", "Nueve de Julio", "Olavarría", "Patagones", "Pehuajó",
+    "Pellegrini", "Pergamino", "Pila", "Pilar", "Pinamar", "Presidente Perón", "Puán", "Punta Indio",
+    "Quilmes", "Ramallo", "Rauch", "Rivadavia", "Rojas", "Roque Pérez", "Saavedra", "Saladillo",
+    "Salliqueló", "Salto", "San Andrés de Giles", "San Antonio de Areco", "San Cayetano", "San Fernando",
+    "San Isidro", "San Miguel", "San Nicolás", "San Pedro", "San Vicente", "Suipacha", "Tandil", "Tapalqué",
+    "Tigre", "Tordillo", "Tornquist", "Trenque Lauquen", "Tres Arroyos", "Tres de Febrero", "Tres Lomas",
+    "Vicente López", "Villa Gesell", "Villarino", "Zárate"
+  ];
+
+  document.querySelectorAll("svg path").forEach((p, index) => {
+    // Solo asignar si el path no tiene id ni title
+    if (!p.hasAttribute("id") && !p.hasAttribute("title")) {
+      const nombre = distritos[index];
+      p.id = nombre.toLowerCase().replace(/\s+/g, "-");
+      p.setAttribute("title", nombre);
+    }
+  });
+
     document.querySelectorAll("svg path").forEach(p => {
       p.classList.add("distrito");
 
