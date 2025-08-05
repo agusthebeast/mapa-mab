@@ -213,7 +213,7 @@
 
 <path class="distrito" d="M370 135L368 133L364 135L366 137z" id="san-isidro" title="San Isidro"/>
 
-<path class="distrito" d="M293 73L292 70L289 68L285 76L282 78L281 84L279 86L285 90L293 81L292 76z" id="san-nicolas" title="San Nicolas"/><path class="distrito" d="M324 89L321 89L319 91L316 88L309 85L298 96L299 99L310 108L312 108L316 104L319 97z" id="san-vicente" title="San Vicente"/>
+<path class="distrito" d="M293 73L292 70L289 68L285 76L282 78L281 84L279 86L285 90L293 81L292 76z" id="san-nicolas" title="San Nicolas"/><path class="distrito" d="M324 89L321 89L319 91L316 88L309 85L298 96L299 99L310 108L312 108L316 104L319 97z" id="san-vicente" title="San Nicolas"/>
 
 <path class="distrito" d="M379 164L377 159L370 164L369 159L364 166L365 172L370 177L375 171L376 172L380 166z" id="san-vicente" title="San Vicente"/>
 
@@ -255,17 +255,17 @@
 
 <path class="distrito" d="M377 159L379 158L377 156L373 158L372 157L369 159L370 164L372 162z" id="tres-lomas" title="Tres Lomas"/>
 
-<path class="distrito" d="M356 139L359 137L356 134L354 136z" id="malvinas-argentinas" title="Malvinas Argentinas"/>
+<path class="distrito" d="M356 139L359 137L356 134L354 136z" id="jose-c-paz" title="Jose C. Paz"/>
 
 <path class="distrito" d="M359 132L356 134L359 137L362 136z" id="malvinas-argentinas" title="Malvinas Argentinas"/>
 
 <path class="distrito" d="M421 204L431 189L431 186L424 176L419 179L415 178L412 181L414 181L411 185L408 179L406 180L409 183L406 185L404 184L400 188L405 191L411 189L417 192L416 196L419 203z" id="punta-indio" title="Punta Indio"/>
 
-<path class="distrito" d="M369 159L368 149L366 150L362 157L366 164L366 162z" id="punta-indio" title="Punta Indio"/>
+<path class="distrito" d="M369 159L368 149L366 150L362 157L366 164L366 162z" id="ezeiza" title="Ezeiza"/>
 
-<path class="distrito" d="M361 146L362 143L360 141L358 143z" id="punta-indio" title="Punta Indio"/>
+<path class="distrito" d="M361 146L362 143L360 141L358 143z" id="ituzaingo" title="Ituzaingo"/>
 
-<path class="distrito" d="M362 139L360 141L362 143L363 141z" id="punta-indio" title="Punta Indio"/>
+<path class="distrito" d="M362 139L360 141L362 143L363 141z" id="hurlingham" title="Hurlingham"/>
 
 <path class="distrito" d="M384 212L386 216L390 217L391 222L399 216L403 215L405 210L411 211L414 210L415 208L403 205L398 201L393 205L390 203L385 208z" id="lezama" title="Lezama"/>
 </g>

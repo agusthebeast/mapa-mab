@@ -173,12 +173,12 @@ function openGaleria(distritoId, categoria) {
     .then(res => res.json())
     .then(lista => {
       if (!lista || lista.length === 0) {
-        const galeria = document.createElement("div");
-        galeria.id = "galeria";
-        galeria.innerHTML = "<div style='color:white; font-size:20px;'>No hay imágenes disponibles.</div>";
-        document.body.appendChild(galeria);
-        return;
-      }
+  // Mostrar mensaje personalizado en vez del carrusel vacío
+  const mensaje = document.getElementById("mensaje-sin-imagenes");
+  mensaje.style.display = "block";
+  return;
+}
+
 
       currentImages = lista;
       currentSlide = 0;

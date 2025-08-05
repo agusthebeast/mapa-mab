@@ -34,10 +34,9 @@
     </div>
   </div>
 
-  <!-- Botón para abrir el formulario -->
   <button onclick="abrirFormularioCarga()">📤 Cargar imagen</button>
 
-  <!-- Formulario oculto -->
+
   <div id="formulario-carga" style="display:none; padding: 1rem; border: 1px solid #ccc;">
     <h3>Cargar imagen al mapa</h3>
     <label>Distrito:
@@ -107,7 +106,7 @@
       document.getElementById("formulario-carga").style.display = "none";
       document.getElementById("mensaje-flotante").style.display = "flex";
 
-      // Limpiar campos
+      
       document.getElementById("distrito-select").value = "";
       document.getElementById("categoria-select").value = "";
       document.getElementById("imagen-input").value = "";
@@ -162,19 +161,24 @@ function cerrarMensaje() {
       </div>
     </div>
   </footer>
-<!-- Mensaje de agradecimiento (oculto por defecto) -->
+
 <div id="gracias-overlay" style="display:none;">
   <h2>Gracias por tu aporte, la provincia necesita abrir los ojos</h2>
   <button onclick="cerrarGracias()">Cerrar</button>
 </div>
 
-<!-- Mensaje flotante reutilizable -->
 <div id="mensaje-flotante" class="oculto">
   <div class="caja-mensaje">
     <img src="iconos/logo3.png" alt="Logo" class="logo-mensaje">
     <p id="texto-mensaje"></p>
     <button onclick="cerrarMensaje()">Cerrar</button>
   </div>
+</div>
+
+<div id="mensaje-sin-imagenes" class="mensaje-oculto">
+  <p><strong>Aún no se han cargado imágenes en esta categoría para este distrito.</strong></p>
+  <p>¡Sé el primero en mostrar la realidad!</p>
+  <p>Busca el formulario de carga debajo del mapa.</p>
 </div>
 
 
