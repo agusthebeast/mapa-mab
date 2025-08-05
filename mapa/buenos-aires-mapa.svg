@@ -17,7 +17,7 @@
 
 <path class="distrito" d="M387 301L384 298L379 304L375 301L372 305L365 298L355 309L368 322L364 326L379 341L403 316z" id="balcarce" title="Balcarce"/>
 
-<path class="distrito" d="M338 98L334 97L334 93L328 94L324 92L324 89L318 101L311 109L315 117L318 118L322 114L325 116L328 111L331 110L330 105L333 105L335 103L332 101L334 98z" id="lezama" title="Lezama"/>
+<path class="distrito" d="M338 98L334 97L334 93L328 94L324 92L324 89L318 101L311 109L315 117L318 118L322 114L325 116L328 111L331 110L330 105L333 105L335 103L332 101L334 98z" id="baradero" title="Baradero"/>
 
 <path class="distrito" d="M299 99L296 98L293 94L290 101L289 109L292 112L291 119L299 123L301 119L301 113L304 113L310 108z" id="arrecifes" title="Arrecifes"/>
 
@@ -213,7 +213,9 @@
 
 <path class="distrito" d="M370 135L368 133L364 135L366 137z" id="san-isidro" title="San Isidro"/>
 
-<path class="distrito" d="M293 73L292 70L289 68L285 76L282 78L281 84L279 86L285 90L293 81L292 76z" id="san-nicolas" title="San Nicolas"/><path class="distrito" d="M324 89L321 89L319 91L316 88L309 85L298 96L299 99L310 108L312 108L316 104L319 97z" id="san-vicente" title="San Nicolas"/>
+<path class="distrito" d="M293 73L292 70L289 68L285 76L282 78L281 84L279 86L285 90L293 81L292 76z" id="san-nicolas" title="San Nicolas"/>
+
+<path class="distrito" d="M324 89L321 89L319 91L316 88L309 85L298 96L299 99L310 108L312 108L316 104L319 97z" id="san-pedro" title="San Pedro"/>
 
 <path class="distrito" d="M379 164L377 159L370 164L369 159L364 166L365 172L370 177L375 171L376 172L380 166z" id="san-vicente" title="San Vicente"/>
 
