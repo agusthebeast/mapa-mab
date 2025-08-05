@@ -321,3 +321,7 @@ function llenarSelectorFormulario() {
     selector.appendChild(option);
   });
 }
+
+document.getElementById("cerrar-mensaje").addEventListener("click", () => {
+  document.getElementById("mensaje-sin-imagenes").style.display = "none";
+});
