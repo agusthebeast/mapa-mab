@@ -199,6 +199,7 @@ function openCategorias(distritoId, distritoNombre) {
   document.body.appendChild(overlay);
 }
 
+
 // 8. Galería (carrusel)
 function openGaleria(distritoId, categoria) {
   closeAll();
