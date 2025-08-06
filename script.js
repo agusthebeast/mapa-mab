@@ -202,16 +202,28 @@ function openCategorias(distritoId, distritoNombre) {
 // 8. Galería (carrusel)
 function openGaleria(distritoId, categoria) {
   closeAll();
+
+  // Guardar el distrito y categoría por si hacen clic en "Subir imagen"
+  window.ultimoDistritoId = distritoId;
+  window.ultimaCategoria = categoria;
+
   fetch(`imagenes/${distritoId}/${categoria}/index.json`)
     .then(res => res.json())
     .then(lista => {
       if (!lista || lista.length === 0) {
-  // Mostrar mensaje personalizado en vez del carrusel vacío
-  const mensaje = document.getElementById("mensaje-sin-imagenes");
-  mensaje.style.display = "block";
-  return;
-}
+        const mensaje = document.getElementById("mensaje-sin-imagenes");
+        mensaje.style.display = "block";
 
+        // Activar la X para cerrar el mensaje
+        const btnCerrar = document.getElementById("cerrar-mensaje");
+        if (btnCerrar) {
+          btnCerrar.onclick = () => {
+            mensaje.style.display = "none";
+          };
+        }
+
+        return;
+      }
 
       currentImages = lista;
       currentSlide = 0;
@@ -241,19 +253,6 @@ function openGaleria(distritoId, categoria) {
     });
 }
 
-function updateCarousel(distritoId, categoria) {
-  const filename = currentImages[currentSlide];
-  const img = document.getElementById("carousel-img");
-  const caption = document.getElementById("pie-imagen");
-
-  img.src = `imagenes/${distritoId}/${categoria}/${filename}`;
-  caption.innerText = filename.replace(/\.[^/.]+$/, "").replace(/[_-]/g, " ");
-}
-
-function changeSlide(step, distritoId, categoria) {
-  currentSlide = (currentSlide + step + currentImages.length) % currentImages.length;
-  updateCarousel(distritoId, categoria);
-}
 
 // 9. Cerrar
 function closeAll() {
